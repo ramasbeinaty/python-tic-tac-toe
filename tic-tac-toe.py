@@ -29,12 +29,11 @@ class TicTacToe:
         winner = ''
 
         # getting left bottom cell
-        left_bottom_cell_index = self.rows * self.rows - (self.rows - 1)
-        left_buttom_cell_value = self.board[left_bottom_cell_index - 1]
+        left_buttom_cell_value = self.board[0]
 
         # direction left bottom+1 -> top right
         for i in range(self.rows-2, -1, -1):
-            cell_index = (i+1) * self.rows - i
+            cell_index = (self.rows-i) * self.rows - i
 
             if self.board[cell_index - 1] != left_buttom_cell_value:
                 print("INFO: No winner in diagonal from left-bottom till top-right")
@@ -44,6 +43,24 @@ class TicTacToe:
         if winner_found:
             winner = left_buttom_cell_value
             print("INFO: Found winner in diagonal from left-bottom till top-right. Winner is ", winner)
+            # return winner
+
+        # # getting left bottom cell
+        # left_bottom_cell_index = self.rows * self.rows - (self.rows - 1)
+        # left_buttom_cell_value = self.board[left_bottom_cell_index - 1]
+        #
+        # # direction left bottom+1 -> top right
+        # for i in range(self.rows-2, -1, -1):
+        #     cell_index = (i+1) * self.rows - i
+        #
+        #     if self.board[cell_index - 1] != left_buttom_cell_value:
+        #         print("INFO: No winner in diagonal from left-bottom till top-right")
+        #         winner_found = False
+        #         break
+        #
+        # if winner_found:
+        #     winner = left_buttom_cell_value
+        #     print("INFO: Found winner in diagonal from left-bottom till top-right. Winner is ", winner)
         # direction
 
     def check_rows(self):
@@ -63,20 +80,40 @@ class TicTacToe:
     def display_board(self):
         # iterate over board and print its values
         # along with side (|) and lower lines (--)
-        for i in range(1, 1+self.rows**2):
-            # if reached the end of the row, don't print a side line
-            if i % self.rows == 0:
-                print('{:^7}'.format(self.board[i-1]))
+        for cell_index in range(self.rows ** 2, 0, -self.rows):
+            for cell_index_flipped in range(cell_index-self.rows+1, cell_index+1):
+                # if reached the end of the row, don't print a side line
+                if cell_index_flipped % self.rows == 0:
+                    print('{:^7}'.format(self.board[cell_index_flipped - 1]))
 
-                # print lower lines as long as it's not last row
-                if not i == self.rows**2:
-                    for j in range(self.rows):
-                        print('--------', end='')
+                    # print lower lines as long as it's not last row
+                    if not cell_index_flipped == self.rows:
+                        for j in range(self.rows):
+                            print('--------', end='')
 
-                print()
-                continue
-            
-            print('{:^7}|'.format(self.board[i-1]), end='')
+                    print()
+                    continue
+
+                print('{:^7}|'.format(self.board[cell_index_flipped - 1]), end='')
+
+
+
+        # for i in range(self.rows**2, 0, -1):
+        #     # if reached the end of the row, don't print a side line
+        #     if i % self.rows == 0:
+        #         print('{:^7}'.format(self.board[i-1]))
+        #         print("oppa2")
+        #
+        #         # print lower lines as long as it's not last row
+        #         if not i == self.rows**2:
+        #             for j in range(self.rows):
+        #                 print('--------', end='')
+        #
+        #         print()
+        #         print("oppa")
+        #         continue
+        #
+        #     print('{:^7}|'.format(self.board[i-1]), end='')
 
     def display_initial_board(self):
         # iterate over board dict and print cell numbers
@@ -100,6 +137,8 @@ class TicTacToe:
     @staticmethod
     def create_board(rows):
         board = [str(i) for i in range(1, 1+rows**2)]
+
+        print(board)
 
         return board
 
