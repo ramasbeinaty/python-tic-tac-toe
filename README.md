@@ -2,7 +2,9 @@
 ## Not your ordinary tic-tac-toe game
 Popularly, a cmd tic-tac-toe is coded using a 2D array and hence, requests the player to enter the row and column of where he wishes to play.
 
-This is different. The game board is stored instead in a 1D array and only 1 value is requested from the player, the cell number displayed. 
+This is different. 
+- The game board is stored instead in a 1D array and only 1 value is requested from the player, the cell number displayed.
+- The game board is dynamic and can be more than a 3x3 board
 
 ## Future Features
 - Play against a computer
