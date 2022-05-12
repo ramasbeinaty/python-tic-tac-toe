@@ -7,5 +7,5 @@ This is different. The game board is stored instead in a 1D array and only 1 val
 ## Future Features
 - Play against a computer
 - Play against a smart computer
-- Include multiple rounds in one game
+- Include multiple rounds in one game and a scoreboard
 - End game if outcome is known to be a tie (maybe)
