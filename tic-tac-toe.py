@@ -1,9 +1,10 @@
 import sys
 
+
 class TicTacToe:
     rows_min = 3
     rows_max = 10
-    
+
     def __init__(self, rows=rows_min):
         self.rows = rows
         self.board = TicTacToe.create_board(rows)
@@ -11,14 +12,25 @@ class TicTacToe:
 
         self.player1 = 'X'
         self.player2 = 'O'
+        self.round_counter = 1
 
-    def check_winner(self):
-        print("DEBUG: Checking for winner")
+    def check_winner(self, player_move):
+        #print("DEBUG: Checking for winner")
 
-        self.check_board_diagonals()
+        winner = self.check_board_row(player_move=player_move)
+        if winner:
+            return winner
 
-        return True
-        self.check_rows()
+        winner = self.check_board_column(player_move=player_move)
+        if winner:
+            return winner
+
+        winner = self.check_board_diagonals()
+        if winner:
+            return winner
+
+    def is_board_filled(self):
+        return True if self.round_counter >= self.rows**2 else False
 
     def check_board_diagonals(self):
         '''
@@ -31,57 +43,139 @@ class TicTacToe:
         # getting left bottom cell
         left_buttom_cell_value = self.board[0]
 
-        # direction left bottom+1 -> top right
-        for i in range(self.rows-2, -1, -1):
-            cell_index = (self.rows-i) * self.rows - i
+        # DIRECTION left-second-bottom to top-right
+        for i in range(self.rows - 2, -1, -1):
+            cell_index = (self.rows - i) * self.rows - i
 
             if self.board[cell_index - 1] != left_buttom_cell_value:
-                print("INFO: No winner in diagonal from left-bottom till top-right")
+                print("INFO: No winner in diagonal from left-bottom to top-right")
                 winner_found = False
                 break
 
         if winner_found:
             winner = left_buttom_cell_value
-            print("INFO: Found winner in diagonal from left-bottom till top-right. Winner is ", winner)
-            # return winner
+            print("INFO: Found winner in diagonal from left-bottom to top-right. Winner is ", winner)
+            # TODO: uncomment below
+            #return winner
 
-        # # getting left bottom cell
-        # left_bottom_cell_index = self.rows * self.rows - (self.rows - 1)
-        # left_buttom_cell_value = self.board[left_bottom_cell_index - 1]
-        #
-        # # direction left bottom+1 -> top right
-        # for i in range(self.rows-2, -1, -1):
-        #     cell_index = (i+1) * self.rows - i
-        #
-        #     if self.board[cell_index - 1] != left_buttom_cell_value:
-        #         print("INFO: No winner in diagonal from left-bottom till top-right")
-        #         winner_found = False
-        #         break
-        #
-        # if winner_found:
-        #     winner = left_buttom_cell_value
-        #     print("INFO: Found winner in diagonal from left-bottom till top-right. Winner is ", winner)
-        # direction
+        # DIRECTION bottom-right to top-left
+        # resetting winner found boolean
+        winner_found = True
 
-    def check_rows(self):
-        # initialize first cell move in the row
-        first_cell_move = self.board.get(str(1))
+        # getting right bottom cell
+        right_bottom_cell_value = self.board[self.rows - 1]
 
-        row_counter = 1
+        for i in range(self.rows - 1, -1, -1):
+            cell_index = (i + 1) * self.rows - i
 
-        for cell_num in range(2, self.rows**2):
-            # if first_move != self.board.get(str(cell_num))
+            if self.board[cell_index - 1] != right_bottom_cell_value:
+                print("INFO: No winner in diagonal from right-bottom to top-left")
+                winner_found = False
+                break
 
-            if cell_num % self.rows == 0:
-                print("DEBUG: No winner found in cell number ", cell_num)
-                row_counter += 1
-                return False
+        if winner_found:
+            winner = right_bottom_cell_value
+            print("INFO: Found winner in diagonal from right-bottom to top-left. Winner is ", winner)
+            return winner
+
+        return winner
+
+    def check_board_row(self, player_move):
+        '''
+            checks the row of the move played to see if player is a winner
+        '''
+
+        # initialize winner
+        winner = ''
+
+        # define player, aka cell played value
+        player = self.board[player_move-1]
+
+        # define the cell number being checked
+        cell_checked = player_move
+
+        # define a counter that will help transition in the row from the cell checked
+        adjacency_counter = 1
+
+        # define a boolean to check if the row edge has been reached
+        edge_reached = False
+
+        # check the value of the adjacent cells within bounds of the row being checked
+        for cell_counter in range(0, self.rows-1):
+            # if cell being checked lies in the last column of the row
+            # reset the cell checked to the cell played
+            if cell_checked % self.rows == 0:
+                edge_reached = True
+
+            if edge_reached:
+                adjacency_counter = -1
+                cell_checked = player_move
+                edge_reached = False
+
+            # check if the cells on the right side of the cell played equals to player (cell played value)
+            cell_checked = cell_checked + adjacency_counter
+            cell_checked_value = self.board[cell_checked-1]
+
+            if cell_checked_value != player:
+                print("INFO: No winner found in row")
+                return winner
+
+        winner = player
+        print("INFO: Found winner in the row. Winner is", winner)
+
+        return winner
+
+    def check_board_column(self, player_move):
+        '''
+            checks the row of the move played to see if player is a winner
+        '''
+
+        # initialize winner
+        winner = ''
+
+        # define player, aka cell played value
+        player = self.board[player_move - 1]
+
+        # define the cell number being checked
+        cell_checked = player_move
+
+        # define a counter that will help transition in the row from the cell checked
+        adjacency_counter = -self.rows
+
+        # define a boolean to check if the row edge has been reached
+        edge_reached = False
+
+        # check the value of the adjacent cells within bounds of the row being checked
+        for cell_counter in range(0, self.rows - 1):
+            # check if cell is in the first row of the column
+            if cell_checked <= self.rows:
+                edge_reached = True
+
+            # if cell being checked lies in the first row of the column
+            # reset the cell checked and flip the sign of adjacency counter to transition to the rows below player move
+            if edge_reached:
+                adjacency_counter = -1 * adjacency_counter
+                cell_checked = player_move
+                edge_reached = False
+
+            # check if the value of adjacent cells is equal to player (cell played value)
+            cell_checked = cell_checked + adjacency_counter
+            cell_checked_value = self.board[cell_checked - 1]
+
+            if cell_checked_value != player:
+                print("INFO: No winner found in column")
+                return winner
+
+        winner = player
+        print("INFO: Found winner in the column. Winner is", winner)
+
+        return winner
 
     def display_board(self):
         # iterate over board and print its values
         # along with side (|) and lower lines (--)
         for cell_index in range(self.rows ** 2, 0, -self.rows):
-            for cell_index_flipped in range(cell_index-self.rows+1, cell_index+1):
+            for cell_index_flipped in range(cell_index - self.rows + 1, cell_index + 1):
                 # if reached the end of the row, don't print a side line
                 if cell_index_flipped % self.rows == 0:
                     print('{:^7}'.format(self.board[cell_index_flipped - 1]))
@@ -96,49 +190,12 @@ class TicTacToe:
 
                 print('{:^7}|'.format(self.board[cell_index_flipped - 1]), end='')
 
-
-
-        # for i in range(self.rows**2, 0, -1):
-        #     # if reached the end of the row, don't print a side line
-        #     if i % self.rows == 0:
-        #         print('{:^7}'.format(self.board[i-1]))
-        #         print("oppa2")
-        #
-        #         # print lower lines as long as it's not last row
-        #         if not i == self.rows**2:
-        #             for j in range(self.rows):
-        #                 print('--------', end='')
-        #
-        #         print()
-        #         print("oppa")
-        #         continue
-        #
-        #     print('{:^7}|'.format(self.board[i-1]), end='')
-
-    def display_initial_board(self):
-        # iterate over board dict and print cell numbers
-        # along with side (|) and lower lines (--)
-        for i in range(1, 1+self.rows**2):
-            # if reached the end of the row, don't print a side line
-            if i % self.rows == 0:
-                print('{:^7}\t'.format(i))
-
-                # print lower lines as long as it's not last row
-                if not i == self.rows**2:
-                    for j in range(self.rows):
-                        print('--------', end='')
-
-                print()
-                continue
-            
-            print('{:^7}|'.format(i), end='')
-    
     # create board based on number of rows
     @staticmethod
     def create_board(rows):
-        board = [str(i) for i in range(1, 1+rows**2)]
+        board = [str(i) for i in range(1, 1 + rows ** 2)]
 
-        print(board)
+        # print(board)
 
         return board
 
@@ -151,8 +208,8 @@ class TicTacToe:
                 num = int(input(input_message))
 
                 if num < min_num or num > max_num:
-                    print("Error: number should be in range("+ str(min_num)+
-                          ", "+ str(max_num)+ ")")
+                    print("Error: number should be in range(" + str(min_num) +
+                          ", " + str(max_num) + ")")
                     raise ValueError
 
                 return int(num)
@@ -162,14 +219,17 @@ class TicTacToe:
                 print("Error: Please enter a valid number", file=sys.stderr)
                 continue
 
+    def switch_players(self, current_player):
+        return self.player2 if current_player == self.player1 else self.player1
+
     @classmethod
     def start(cls):
         # call this function to start using the class
 
         # display a welcoming message
-        print("Welcome to Tic Tac Toe!\n\n"+
-              "You can play using any number of rows in the range ("+
-              str(TicTacToe.rows_min)+ ", "+ str(TicTacToe.rows_max)+
+        print("Welcome to Tic Tac Toe!\n\n" +
+              "You can play using any number of rows in the range (" +
+              str(TicTacToe.rows_min) + ", " + str(TicTacToe.rows_max) +
               "), inclusive of both.")
 
         # get number of board rows from user
@@ -183,25 +243,36 @@ class TicTacToe:
         # initialize first player
         player = game.player1
 
-        # initialize round_counter
-        round_counter = 1
-
         while 1:
             # ask player for move
-            player_move = TicTacToe.get_number_in_range(input_message="Enter the cell number: ",
-                                                        max_num=TicTacToe.rows_max,
-                                                        min_num=1)
+            player_move = TicTacToe.get_number_in_range(
+                input_message="Player "+player+" - Enter a cell number: ",
+                max_num=game.rows**2,
+                min_num=1)
+
             # update board and display it
-            game.board[player_move-1] = player
+            game.board[player_move - 1] = player
             game.display_board()
 
-            # if round counter > minimum board row number, check for a winner
-            if round_counter >= game.rows:
-                winner_found = game.check_winner()
+            # once minimum amount of rounds are played, check if there's a winner or it's a tie
+            if game.round_counter >= game.rows:
+                board_filled = game.is_board_filled()
+                if board_filled:
+                    print("It's a tie! Good luck next time :p")
+                    break
+
+                winner = game.check_winner(player_move)
 
                 # if winner found, declare winner and exit function
+                if winner:
+                    print("CONGRATULATIONS PLAYER {}! You have won!".format(winner))
+                    break
 
-            round_counter += 1
+            game.round_counter += 1
+
+            player = game.switch_players(current_player=player)
+
+        print("Game Over")
 
 
 TicTacToe.start()
@@ -211,6 +282,3 @@ TODO:
 - 
 
 '''
-            
-            
-    
