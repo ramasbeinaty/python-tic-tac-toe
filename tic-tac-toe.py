@@ -15,6 +15,10 @@ class TicTacToe:
         self.round_counter = 1
 
     def check_winner(self, player_move):
+        '''
+            check if there's any winner on the board; check through the rows and columns and diagonals
+        '''
+
         #print("DEBUG: Checking for winner")
 
         winner = self.check_board_row(player_move=player_move)
@@ -30,6 +34,10 @@ class TicTacToe:
             return winner
 
     def is_board_filled(self):
+        '''
+         Check if board is filled
+        '''
+
         return True if self.round_counter >= self.rows**2 else False
 
     def check_board_diagonals(self):
@@ -127,7 +135,7 @@ class TicTacToe:
 
     def check_board_column(self, player_move):
         '''
-            checks the row of the move played to see if player is a winner
+            checks the column of the move played to see if player is a winner
         '''
 
         # initialize winner
@@ -172,6 +180,10 @@ class TicTacToe:
         return winner
 
     def display_board(self):
+        '''
+            Display the board appropriately, according to the num key pad
+        '''
+
         # iterate over board and print its values
         # along with side (|) and lower lines (--)
         for cell_index in range(self.rows ** 2, 0, -self.rows):
@@ -190,17 +202,22 @@ class TicTacToe:
 
                 print('{:^7}|'.format(self.board[cell_index_flipped - 1]), end='')
 
-    # create board based on number of rows
     @staticmethod
     def create_board(rows):
-        board = [str(i) for i in range(1, 1 + rows ** 2)]
+        '''
+            create board based on number of rows
+        '''
 
-        # print(board)
+        board = [str(i) for i in range(1, 1 + rows ** 2)]
 
         return board
 
     @staticmethod
     def get_number_in_range(input_message, max_num, min_num=0):
+        '''
+            Get a correct number in a specified range from user
+        '''
+
         # get number from user
         while 1:
             try:
@@ -220,11 +237,16 @@ class TicTacToe:
                 continue
 
     def switch_players(self, current_player):
+        '''
+            Switch the player turns
+        '''
         return self.player2 if current_player == self.player1 else self.player1
 
     @classmethod
     def start(cls):
-        # call this function to start using the class
+        '''
+            Call this function to start using the class
+        '''
 
         # display a welcoming message
         print("Welcome to Tic Tac Toe!\n\n" +
@@ -232,19 +254,19 @@ class TicTacToe:
               str(TicTacToe.rows_min) + ", " + str(TicTacToe.rows_max) +
               "), inclusive of both.")
 
-        # get number of board rows from user
+        # get number of board rows from player
         board_rows = TicTacToe.get_number_in_range(input_message="Enter the number of rows: ",
                                                    max_num=TicTacToe.rows_max,
                                                    min_num=TicTacToe.rows_min)
 
-        # initialize tic-tac-toe instance
+        # define a tic-tac-toe instance
         game = cls(rows=board_rows)
 
-        # initialize first player
+        # define the first player
         player = game.player1
 
         while 1:
-            # ask player for move
+            # ask player for their move
             player_move = TicTacToe.get_number_in_range(
                 input_message="Player "+player+" - Enter a cell number: ",
                 max_num=game.rows**2,
@@ -263,7 +285,7 @@ class TicTacToe:
 
                 winner = game.check_winner(player_move)
 
-                # if winner found, declare winner and exit function
+                # if winner found, declare winner and end game
                 if winner:
                     print("CONGRATULATIONS PLAYER {}! You have won!".format(winner))
                     break
@@ -275,10 +297,15 @@ class TicTacToe:
         print("Game Over")
 
 
-TicTacToe.start()
+def main():
 
-'''
-TODO:
-- 
+    TicTacToe.start()
 
-'''
+    return 0
+
+
+# execute the main function when system starts
+if __name__ == "__main__":
+    main()
+
+
